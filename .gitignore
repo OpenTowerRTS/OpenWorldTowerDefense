@@ -28,6 +28,9 @@
 # Visual Studio cache directory
 .vs/
 
+# CodeCoverage
+/CodeCoverage
+
 # Gradle cache directory
 .gradle/
 
