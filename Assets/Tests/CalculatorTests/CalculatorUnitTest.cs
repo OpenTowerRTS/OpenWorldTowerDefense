@@ -1,9 +1,9 @@
 ﻿using System.Collections;
+using Game;
 using NUnit.Framework;
+using UnityEditor.VersionControl;
 using UnityEngine;
 using UnityEngine.TestTools;
-using Game;
-using UnityEditor.VersionControl;
 public class CalculatorUnitTest
 {
     // A Test behaves as an ordinary method
