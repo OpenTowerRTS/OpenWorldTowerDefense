@@ -23,7 +23,8 @@ jobs:
                       Assets/**
     lint:
         needs: [changes]
-        if: needs.changes.outputs.exists != 'false'
+        #if: needs.changes.outputs.exists != 'false'
+        if: always()
         name: Unity dotnet linter
         runs-on: ubuntu-latest
         steps:
@@ -42,7 +43,8 @@ jobs:
 
     test:
         needs: [changes]
-        if: needs.changes.outputs.exists != 'false'
+        # if: needs.changes.outputs.exists != 'false'
+        if: always()
         name: Unity test
         runs-on: ubuntu-latest
         strategy:
