@@ -1,6 +1,6 @@
 name: unity-ci-actions
 run-name: ${{github.actor}} running Unity ci
-on: [pull_request, merge_group]
+on: [pull_request, merge_group, workflow_dispatch]
 
 concurrency:
     # Makes sure only one is run per PR
