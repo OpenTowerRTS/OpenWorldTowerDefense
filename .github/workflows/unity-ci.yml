@@ -1,0 +1,95 @@
+name: unity-ci-actions
+run-name: ${{github.actor}} running Unity ci
+on: [pull_request, merge_group]
+
+concurrency:
+    # Makes sure only one is run per PR
+    group: unity-ci-${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    changes:
+        continue-on-error: true
+        name: Check for file changes
+        outputs:
+            exists: ${{steps.changed.outputs.exists}}
+        runs-on: ubuntu-latest
+        steps:
+            - id: changed
+              uses: yumemi-inc/changed-files@v3
+              with:
+                  patterns: |
+                      .github/workflows/unity-ci.yml
+                      Assets/**
+    lint:
+        needs: [changes]
+        if: needs.changes.outputs.exists != 'false'
+        name: Unity dotnet linter
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+              with:
+                  lfs: true
+                  sparse-checkout: |
+                      Assets
+            - name: Setup .NET
+              uses: actions/setup-dotnet@v4
+              with:
+                  dotnet-version: "10.0.x"
+            - name: Run dotnet format
+              run: dotnet format --verfiy-no-changes ---verbosity diagnostic
+
+    test:
+        needs: [changes]
+        if: needs.changes.outputs.exists != 'false'
+        name: Unity test
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                projectPath:
+                    - ./
+                testMode:
+                    - playmode
+                    - editmode
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+              with:
+                  lfs: true
+            - uses: actions/cache@v4
+              with:
+                  path: ${{ matrix.projectPath }}/Library
+                  key: Library-${{ matrix.projectPath }}
+                  restore-keys: |
+                      Library-
+            - uses: game-ci/unity-test-runner@v4
+              id: tests
+              env:
+                  UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+                  UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+                  UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+              with:
+                  unityVersion: 6000.3.x
+                  projectPath: ${{ matrix.projectPath }}
+                  testMode: ${{ matrix.testMode }}
+                  artifactsPath: ${{ matrix.testMode }}-artifacts
+                  checkName: ${{ matrix.testMode }} Test Results
+                  customParameters: >
+                      -debugCodeOptimization
+                      -enableCodeCoverage
+                      -coverageResultsPath ./coverage-results
+                      -coverageOptions "generateHtmlReport;generateBadgeReport;assemblyFilters:+<assets>"
+            - uses: actions/upload-artifact@v4
+              if: always()
+              with:
+                  name: Test results for ${{ matrix.testMode }}
+                  path: ${{ steps.tests.outputs.artifactsPath }}
+            - name: Upload XML report to Codecov
+              if: always()
+              uses: codecov/codecov-action@v5
+              with:
+                  flags: automated
+                  token: ${{ secrets.CODECOV_TOKEN }}
+                  files: ./coverage-results/**/*.xml

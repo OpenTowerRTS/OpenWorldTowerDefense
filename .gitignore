@@ -29,7 +29,7 @@
 .vs/
 
 # CodeCoverage
-/CodeCoverage
+/CoverageResults
 
 # Gradle cache directory
 .gradle/
