@@ -39,7 +39,7 @@ jobs:
               with:
                   dotnet-version: "10.0.x"
             - name: Run dotnet format
-              run: dotnet format --verfiy-no-changes ---verbosity diagnostic
+              run: dotnet format --verfiy-no-changes
 
     test:
         needs: [changes]
@@ -73,7 +73,7 @@ jobs:
                   UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
                   UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
               with:
-                  unityVersion: 6000.3.x
+                  unityVersion: 6000.3
                   projectPath: ${{ matrix.projectPath }}
                   testMode: ${{ matrix.testMode }}
                   artifactsPath: ${{ matrix.testMode }}-artifacts
