@@ -49,8 +49,9 @@
     <Analyzer Include="D:\GameProject\UnityEditor\6000.3.14f1\Editor\Data\Tools\BuildPipeline\Unity.SourceGenerators\Unity.UIToolkit.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\PullRequestTest.cs" />
+    <Compile Include="Assets\Scripts\Interface\System\IGameSystem.cs" />
     <Compile Include="Assets\Scripts\Calculator.cs" />
+    <Compile Include="Assets\Scripts\Interface\Entity\IGameEntity.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Scripts\Game.Runtime.asmdef" />
