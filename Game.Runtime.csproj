@@ -50,8 +50,23 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\Interface\System\IGameSystem.cs" />
+    <Compile Include="Assets\Scripts\System\SelectSystem.cs" />
+    <Compile Include="Assets\Scripts\Interface\Component\IComponentAuthor.cs" />
+    <Compile Include="Assets\Scripts\PlayerInputHandler.cs" />
+    <Compile Include="Assets\Scripts\WorldBridge.cs" />
+    <Compile Include="Assets\Scripts\Interface\Component\IComponent.cs" />
+    <Compile Include="Assets\Scripts\EntityView.cs" />
+    <Compile Include="Assets\Scripts\Author\SelectComponentAuthor.cs" />
+    <Compile Include="Assets\Scripts\Struct\GameEntity.cs" />
+    <Compile Include="Assets\Scripts\World.cs" />
+    <Compile Include="Assets\Scripts\Struct\SelectComponent.cs" />
+    <Compile Include="Assets\Scripts\System\EventBus.cs" />
+    <Compile Include="Assets\Scripts\Command\SelectCommand.cs" />
+    <Compile Include="Assets\Scripts\Input\PlayerInput.cs" />
+    <Compile Include="Assets\Scripts\Display\HighlightDisplay.cs" />
+    <Compile Include="Assets\Scripts\Interface\IEventBus.cs" />
     <Compile Include="Assets\Scripts\Calculator.cs" />
-    <Compile Include="Assets\Scripts\Interface\Entity\IGameEntity.cs" />
+    <Compile Include="Assets\Scripts\System\HighlightSystem.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Scripts\Game.Runtime.asmdef" />
@@ -1171,6 +1186,14 @@
     </Reference>
     <Reference Include="System.Xml.Serialization">
       <HintPath>D:\GameProject\UnityEditor\6000.3.14f1\Editor\Data\NetStandard\compat\2.1.0\shims\netfx\System.Xml.Serialization.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.InputSystem.ForUI">
+      <HintPath>Library\ScriptAssemblies\Unity.InputSystem.ForUI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.InputSystem">
+      <HintPath>Library\ScriptAssemblies\Unity.InputSystem.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEditor.UI">
