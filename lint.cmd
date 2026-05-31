@@ -1,3 +1,3 @@
 @echo off
-dotnet format Assembly-CSharp.csproj --verify-no-changes
+dotnet format Game.Runtime.csproj --verify-no-changes
 pause
