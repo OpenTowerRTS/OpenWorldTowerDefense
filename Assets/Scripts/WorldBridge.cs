@@ -13,11 +13,8 @@ public class WorldBridge : MonoBehaviour
         // Temporary: Add SelectSystem to the world for testing. In the future, systems should be added and initialized by a Central Manager.
         SelectSystem selectSystem = new();
         HighlightSystem highlightSystem = new();
-        selectSystem.Initialize();
-        highlightSystem.Initialize();
-        World.AddSystem(selectSystem);
-        World.AddSystem(highlightSystem);
-        selectSystem.eventBus.Subscribe<List<EntityID>>(highlightSystem.OnHighlightEntity);
+        selectSystem.Initialize(World);
+        highlightSystem.Initialize(World);
     }
     // Initialize the World and Central Manager here
 

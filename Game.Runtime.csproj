@@ -63,6 +63,7 @@
     <Compile Include="Assets\Scripts\System\EventBus.cs" />
     <Compile Include="Assets\Scripts\Command\SelectCommand.cs" />
     <Compile Include="Assets\Scripts\Input\PlayerInput.cs" />
+    <Compile Include="Assets\Scripts\Event\HighlightEvent.cs" />
     <Compile Include="Assets\Scripts\Display\HighlightDisplay.cs" />
     <Compile Include="Assets\Scripts\Interface\IEventBus.cs" />
     <Compile Include="Assets\Scripts\Calculator.cs" />

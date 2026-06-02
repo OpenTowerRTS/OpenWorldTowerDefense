@@ -3,7 +3,7 @@
 // Systems that implement this interface will be initialized and shut down by a Central Manager.
 public interface IBaseGameSystem : IGameSystem
 {
-    public void Initialize();
+    public void Initialize(World world);
     public void Shutdown();
 }
 

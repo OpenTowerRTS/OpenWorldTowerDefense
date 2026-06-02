@@ -8,8 +8,11 @@ public sealed class World
     private Dictionary<EntityID, GameObject> _entityObjects;
     private Dictionary<Type, IGameSystem> _systems;
     private Dictionary<EntityID, Dictionary<Type, IComponent>> _entityComponents; // Maps EntityID to a dictionary of component types and their instances
+
+    public EventBus EventBus { get; private set; }
     public void Initialize()
     {
+        EventBus = new EventBus();
         _systems = new Dictionary<Type, IGameSystem>();
         _entityComponents = new Dictionary<EntityID, Dictionary<Type, IComponent>>();
         _entityObjects = new Dictionary<EntityID, GameObject>();

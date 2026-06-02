@@ -5,21 +5,22 @@ public class SelectSystem : IUpdatableSystem, IBaseGameSystem
 {
     // Public for now for easy debugging
 
-    public EventBus eventBus;
     public List<EntityID> selectedEntities;
     private Queue<SelectCommand> _selectCommands;
-    public void Initialize()
+    private World _world;
+    public void Initialize(World world)
     {
+        _world = world;
+        _world.AddSystem(this);
         selectedEntities = new List<EntityID>();
         _selectCommands = new Queue<SelectCommand>();
-        eventBus = new EventBus();
         // Initialization logic for the SelectSystem, if needed
     }
 
     public void EnqueueSelectCommand(SelectCommand command)
     {
         _selectCommands.Enqueue(command);
-        Debug.Log($"Enqueued SelectCommand for EntityID: {command.targetEntityID}");
+        Debug.Log($"Enqueued SelectCommand for EntityID: {command.TargetEntityID}");
     }
 
     public void Shutdown()
@@ -38,10 +39,10 @@ public class SelectSystem : IUpdatableSystem, IBaseGameSystem
 
             // For simplicity, only one entity can be selected at a time.
             selectedEntities.Clear();
-            if (command.targetEntityID is not EntityID targetEntityID)
+            if (command.TargetEntityID is not EntityID targetEntityID)
             {
                 Debug.Log("Remove all selected target");
-                eventBus.Publish(selectedEntities);
+                _world.EventBus.Publish(new HighlightEntitiesEvent(selectedEntities));
                 continue;
             }
 
@@ -49,7 +50,7 @@ public class SelectSystem : IUpdatableSystem, IBaseGameSystem
 
             Debug.Log($"Processed Event: Selected EntityID: {targetEntityID}");
 
-            eventBus.Publish(selectedEntities);
+            _world.EventBus.Publish(new HighlightEntitiesEvent(selectedEntities));
         }
     }
 }

@@ -11,15 +11,14 @@ public class PlayerInputHandler : MonoBehaviour
             Vector2 mousePosition = Mouse.current.position.ReadValue();
             Ray ray = Camera.main.ScreenPointToRay(mousePosition);
             RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
-            SelectCommand selectCommand = new();
+            SelectCommand selectCommand = new(null);
             if (hit)
             {
                 if (hit.collider.gameObject.TryGetComponent<EntityView>(out EntityView entityView))
                 {
                     if (WorldBridge.World.GetComponentFromEntity<SelectableComponent>(entityView.EntityID, out SelectableComponent _))
                     {
-                        selectCommand = new()
-                        { targetEntityID = entityView.EntityID };
+                        selectCommand = new SelectCommand(entityView.EntityID);
                     }
                 }
             }
