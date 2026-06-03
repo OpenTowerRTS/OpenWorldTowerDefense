@@ -38,7 +38,7 @@ jobs:
               with:
                   dotnet-version: "10.0.x"
             - name: Run dotnet format
-              run: dotnet format Assembly-CSharp.csproj --verify-no-changes
+              run: dotnet format Game.Runtime.csproj --verify-no-changes
 
     test:
         needs: [changes]
