@@ -66,6 +66,7 @@
     <Compile Include="Assets\Scripts\Struct\GameEntity.cs" />
     <Compile Include="Assets\Scripts\Struct\SelectComponent.cs" />
     <Compile Include="Assets\Scripts\WorldState\WorldPhase.cs" />
+    <Compile Include="Assets\Scripts\Struct\ComponentRegistry.cs" />
     <Compile Include="Assets\Scripts\Command\SelectCommand.cs" />
     <Compile Include="Assets\Scripts\WorldState\World.cs" />
     <Compile Include="Assets\Scripts\WorldState\WorldBridge.cs" />

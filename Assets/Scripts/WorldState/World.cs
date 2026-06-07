@@ -5,12 +5,33 @@ using UnityEngine;
 public sealed class World
 {
 
-    // Entity data
+    private interface IComponentPool
+    {
+        public void Remove(EntityID entity);
+        public bool Has(EntityID entity);
+    }
+
+    private class ComponentPool<T> : IComponentPool
+    {
+        private readonly Dictionary<EntityID, T> _components = new();
+        public void Add(EntityID entity, T component) => _components[entity] = component;
+
+        public void Remove(EntityID entity) => _components.Remove(entity);
+
+        public bool Has(EntityID entity) => _components.ContainsKey(entity);
+
+        public bool TryGet(EntityID entity, out T component) => _components.TryGetValue(entity, out component);
+
+        public Dictionary<EntityID, T>.Enumerator GetEnumerator() => _components.GetEnumerator();
+
+        public int Count => _components.Count;
+    }
+    // Maps component types to a dictionary of EntityIDs and their component instances.
+    // This is a more efficient structure for querying entities by component type, which is a common operation in ECS.
+    private Dictionary<Type, IComponentPool> _entityComponentPool;
+
+    // Still need reference to gameObject for now since we need to manipulate the GameObject in presentation system.
     private Dictionary<EntityID, GameObject> _entityObjects;
-    private Dictionary<EntityID, Dictionary<Type, IComponent>> _entityComponents; // Maps EntityID to a dictionary of component types and their instances
-    private Dictionary<Type, List<EntityID>> _componentEntities; // Maps component types to a list of EntityIDs that have that component. AKA, this is a reverse index for quickly querying entities by component type.
-
-
 
     // Event and Command State
     public EventBus EventBus { get; private set; }
@@ -50,10 +71,19 @@ public sealed class World
         highlightEntities = new List<EntityID>();
 
         // Initialize Entity Data
-        _entityComponents = new Dictionary<EntityID, Dictionary<Type, IComponent>>();
+        _entityComponentPool = new Dictionary<Type, IComponentPool>();
         _entityObjects = new Dictionary<EntityID, GameObject>();
 
-        _componentEntities = new Dictionary<Type, List<EntityID>>();
+        // Initialize component pools for each component type. This allows us to efficiently manage components of different types.
+        foreach (Type componentType in ComponentRegistry.Types)
+        {
+            //Take the generic class ComponentPool<T> and replace T with a runtime type. AKA this is create ComponentPool<componentType>
+            Type poolType = typeof(ComponentPool<>).MakeGenericType(componentType);
+
+            //Instantiate an object from a Type that you only know at runtime.
+            _entityComponentPool[componentType] = (IComponentPool)Activator.CreateInstance(poolType);
+        }
+
         // Initialize Systems
         _systems = new Dictionary<Type, IGameSystem>();
         Phases = new Dictionary<EWorldPhase, WorldPhase>
@@ -74,7 +104,6 @@ public sealed class World
     public EntityID RegisterEntity()
     {
         EntityID entityId = EntityIDGenerator.GenerateID(); // Generate a unique EntityID
-        _entityComponents[entityId] = new Dictionary<Type, IComponent>(); // Initialize the component dictionary for this entity
 
         Debug.Log($"EntityView with EntityID {entityId} registered to the world.");
         return entityId;
@@ -84,7 +113,6 @@ public sealed class World
     public EntityID RegisterEntity(GameObject entityObject)
     {
         EntityID entityId = EntityIDGenerator.GenerateID(); // Generate a unique EntityID
-        _entityComponents[entityId] = new Dictionary<Type, IComponent>(); // Initialize the component dictionary for this entity
         _entityObjects[entityId] = entityObject; // Store the GameObject for this entity
 
         Debug.Log($"EntityView with EntityID {entityId} registered to the world.");
@@ -161,30 +189,27 @@ public sealed class World
     public void AddSystem<T>(T system) where T : class, IGameSystem => _systems[typeof(T)] = system;
     public T GetSystem<T>() where T : class, IGameSystem => _systems.TryGetValue(typeof(T), out IGameSystem system) ? system as T : null;
 
-    // why not just use object component and get type later? You will need to cast later since now component is stored as object type.
+    // why not just use object as the component (AKA object component instead of T component) and get type later? You will need to cast later since now component is stored as object type.
     // Having T here make it easy to define the casting type at adding time
     public void AddComponentToEntity<T>(EntityID entityId, T component) where T : IComponent
     {
         // We make sure to create an entry for each entity in RegisterEntity, so we can assume the entityId is always valid and has an entry in _entityComponents.
-        _entityComponents[entityId][typeof(T)] = component;
-        _componentEntities[typeof(T)].Add(entityId);
-        Debug.Log($"Registering component from author: {typeof(T)} for EntityID: {entityId}");
+        ((ComponentPool<T>)_entityComponentPool[typeof(T)]).Add(entityId, component);
+        Debug.Log($"Add component to World: {typeof(T)} for EntityID: {entityId}");
     }
 
     public void RemoveComponentFromEntity<T>(EntityID entityId) where T : IComponent
     {
-        _entityComponents[entityId].Remove(typeof(T));
-        _componentEntities[typeof(T)].Remove(entityId);
+        ((ComponentPool<T>)_entityComponentPool[typeof(T)]).Remove(entityId);
+        Debug.Log($"Remove component from World: {typeof(T)} for EntityID: {entityId}");
     }
 
     // Try to get component, return false if entity does not exist or doesn't have the component.
     public bool GetComponentFromEntity<T>(EntityID entityId, out T component) where T : IComponent
     {
         component = default;
-        Debug.Log(_entityComponents[entityId][typeof(T)]);
-        if (_entityComponents.TryGetValue(entityId, out Dictionary<Type, IComponent> components) && components.TryGetValue(typeof(T), out IComponent comp))
+        if (((ComponentPool<T>)_entityComponentPool[typeof(T)]).TryGet(entityId, out component))
         {
-            component = (T)comp;
             return true;
         }
         return false;
