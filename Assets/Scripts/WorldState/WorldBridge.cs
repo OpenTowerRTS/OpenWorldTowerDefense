@@ -15,6 +15,9 @@ public class WorldBridge : MonoBehaviour
         HighlightSystem highlightSystem = new();
         selectSystem.Initialize(World);
         highlightSystem.Initialize(World);
+
+        World.Phases[World.EWorldPhase.Command].AddSystem(selectSystem);
+        World.Phases[World.EWorldPhase.Presentation].AddSystem(highlightSystem);
     }
     // Initialize the World and Central Manager here
 
@@ -22,4 +25,5 @@ public class WorldBridge : MonoBehaviour
 
     // Update is called once per frame
     public void Update() => World.Update(Time.deltaTime);
+    public void FixedUpdate() => World.FixedUpdate(Time.fixedDeltaTime);
 }
