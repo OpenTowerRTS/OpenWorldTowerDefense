@@ -13,7 +13,6 @@ public class CommandBuffer
         version = 0;
     }
 
-
     public long version; // Incremented each time commands are processed, can be used for synchronization and debugging
 
     public void AddCommand<T>(T command) where T : ICommand

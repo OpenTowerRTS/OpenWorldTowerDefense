@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class MovementCommandProcessingSystem : IGameSystem, IFixedUpdatableSystem
@@ -11,27 +12,29 @@ public class MovementCommandProcessingSystem : IGameSystem, IFixedUpdatableSyste
         Debug.Log("MovementCommandProcessingSystem initialized");
     }
 
-
     public void Shutdown() => Debug.Log("MovementCommandProcessingSystem shutdown");
 
     public void FixedUpdate(float deltaTime)
     {
-        if (_world.Commands.GetCommands<MovementCommand>(out List<MovementCommand> movementCommands) && movementCommands.Count > 0)
+        if (_world.Commands.GetCommands<MoveCommand>(out List<MoveCommand> movementCommands) && movementCommands.Count > 0)
         {
-            foreach (MovementCommand command in movementCommands)
+            Debug.Log($"MovementCommandProcessingSystem received {movementCommands.Count} MoveCommand(s)");
+            foreach (MoveCommand command in movementCommands)
             {
                 foreach (EntityID entityId in command.TargetEntityIDs)
                 {
-                    if (_world.GetComponentFromEntity<MovementComponent>(entityId, out MovementComponent _))
+                    if (_world.TryGetComponentFromEntity<MovementComponent>(entityId, out MovementComponent _))
                     {
                         // Add or update the MovementTargetComponent for the entity with the target position from the command
-                        if (_world.GetComponentFromEntity<MovementTargetComponent>(entityId, out MovementTargetComponent movementTargetComponent))
+                        if (!_world.TryGetComponentFromEntity<MovementTargetComponent>(entityId, out MovementTargetComponent _))
                         {
                             _world.AddComponentToEntity<MovementTargetComponent>(entityId, new MovementTargetComponent(command.TargetPosition));
                         }
                         else
                         {
-                            movementTargetComponent.TargetPosition = command.TargetPosition;
+                            ref MovementTargetComponent movementTargetComponentRef = ref _world.GetComponentFromEntity<MovementTargetComponent>(entityId);
+                            movementTargetComponentRef.TargetPosition = command.TargetPosition;
+                            movementTargetComponentRef.Version++; // Increment version to indicate an update
                         }
                     }
                 }

@@ -7,5 +7,6 @@ public static class ComponentRegistry
         typeof(MovementComponent),
         typeof(SelectableComponent),
         typeof(MovementTargetComponent),
+        typeof(PathComponent),
     };
 }

@@ -1,11 +1,18 @@
-﻿public struct MovementComponent : IComponent
+﻿using UnityEngine;
+
+public struct MovementComponent : IComponent
 {
     public float MaxSpeed { get; set; } // Maximum speed the entity can move at
-    public float CurrSpeed { get; set; } // Current speed of the entity, can
+    public float ArrivalRadius { get; set; } // How close should
+    public Vector3 CurrSpeed { get; set; } // Current speed of the entity, can
 
-    public MovementComponent(float maxSpeed)
+    public bool ShouldStopNextFrame { get; set; }
+
+    public MovementComponent(float maxSpeed, float arrivalRadius)
     {
         MaxSpeed = maxSpeed;
-        CurrSpeed = 0f; // Initialize current speed to 0
+        ArrivalRadius = arrivalRadius;
+        CurrSpeed = Vector3.zero; // Initialize current speed to 0
+        ShouldStopNextFrame = false; // This is to avoid overshooting
     }
 }

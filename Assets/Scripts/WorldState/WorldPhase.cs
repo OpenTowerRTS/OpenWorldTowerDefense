@@ -2,14 +2,9 @@
 
 public class WorldPhase
 {
-    private World _world;
-    private List<IGameSystem> _systems;
+    private readonly List<IGameSystem> _systems;
 
-    public WorldPhase(World world)
-    {
-        _world = world;
-        _systems = new List<IGameSystem>();
-    }
+    public WorldPhase() => _systems = new List<IGameSystem>();
 
     public void AddSystem(IGameSystem system) => _systems.Add(system);
 

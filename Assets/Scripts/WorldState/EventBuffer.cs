@@ -13,7 +13,6 @@ public class EventBuffer
         Version = 0;
     }
 
-
     public void AddEvent<T>(T newEvent) where T : IEvent
     {
         if (!_write.TryGetValue(typeof(T), out List<IEvent> events))

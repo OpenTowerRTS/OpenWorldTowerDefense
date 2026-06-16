@@ -24,10 +24,10 @@ public class HighlightSystem : IUpdatableSystem, IGameSystem
                 IReadOnlyList<EntityID> entityIDs = highlightEvent.EntityIDs;
 
                 // unhighlight previously highlighted entities
-                foreach (EntityID entityID in _world.highlightEntities)
+                foreach (EntityID entityId in _world.highlightEntities)
                 {
                     // Logic to unhighlight the entity, e.g., remove highlight component or change material
-                    if (WorldBridge.World.GetEntityObject(entityID, out GameObject entityObject))
+                    if (WorldBridge.World.GetEntityObject(entityId, out GameObject entityObject))
                     {
                         if (entityObject.TryGetComponent<HighlightDisplay>(out HighlightDisplay display))
                         {

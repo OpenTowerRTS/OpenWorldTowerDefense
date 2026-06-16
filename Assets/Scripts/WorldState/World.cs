@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public sealed class World
@@ -13,18 +14,113 @@ public sealed class World
 
     private class ComponentPool<T> : IComponentPool
     {
-        private readonly Dictionary<EntityID, T> _components = new();
-        public void Add(EntityID entity, T component) => _components[entity] = component;
+        // Dense component storage
+        private T[] _components;
 
-        public void Remove(EntityID entity) => _components.Remove(entity);
+        // Dense entity storage (parallel to components)
+        private EntityID[] _entities;
 
-        public bool Has(EntityID entity) => _components.ContainsKey(entity);
+        // Sparse map: EntityID -> index in dense arrays
+        private readonly Dictionary<EntityID, int> _index;
 
-        public bool TryGet(EntityID entity, out T component) => _components.TryGetValue(entity, out component);
+        public int Count { get; private set; }
 
-        public Dictionary<EntityID, T>.Enumerator GetEnumerator() => _components.GetEnumerator();
+        private const int DEFAULT_CAPACITY = 256;
 
-        public int Count => _components.Count;
+        public ComponentPool()
+        {
+            _components = new T[DEFAULT_CAPACITY];
+            _entities = new EntityID[DEFAULT_CAPACITY];
+            _index = new Dictionary<EntityID, int>();
+            Count = 0;
+        }
+
+        public void Add(EntityID entity, T component)
+        {
+            // If entity already exists → replace in place
+            if (_index.TryGetValue(entity, out int existingIndex))
+            {
+                _components[existingIndex] = component;
+                return;
+            }
+
+            EnsureCapacity(Count + 1);
+            _components[Count] = component;
+            _entities[Count] = entity;
+            _index[entity] = Count;
+            Count++;
+        }
+
+        public void Remove(EntityID entity)
+        {
+            if (!_index.TryGetValue(entity, out int removeIndex))
+            {
+                return;
+            }
+
+            int lastIndex = Count - 1;
+
+            // Move last element into removed slot
+            _components[removeIndex] = _components[lastIndex];
+            _entities[removeIndex] = _entities[lastIndex];
+
+            // Update moved entity index to removeSlot
+            _index[_entities[lastIndex]] = removeIndex;
+
+            // Remove old entry of the removed entity
+            _index.Remove(entity);
+
+            Count--;
+        }
+
+        public bool Has(EntityID entity)
+            => _index.ContainsKey(entity);
+
+        public ref T GetRef(EntityID entity) => ref _components[_index[entity]];
+
+        public bool TryGet(EntityID entity, out T component)
+        {
+            if (_index.TryGetValue(entity, out int index))
+            {
+                component = _components[index];
+                return true;
+            }
+
+            component = default;
+            return false;
+        }
+
+        public IEnumerable<EntityID> GetEntityIDs()
+        {
+            for (int i = 0; i < Count; i++)
+            {
+                yield return _entities[i];
+            }
+        }
+
+        public IEnumerable<KeyValuePair<EntityID, T>> GetAll()
+        {
+            for (int i = 0; i < Count; i++)
+            {
+                yield return new KeyValuePair<EntityID, T>(
+                    _entities[i],
+                    _components[i]
+                );
+            }
+        }
+
+        private void EnsureCapacity(int size)
+        {
+            if (size <= _components.Length)
+            {
+                return;
+            }
+
+            int newCapacity = _components.Length * 2;
+
+            Array.Resize(ref _components, newCapacity);
+            Array.Resize(ref _entities, newCapacity);
+        }
     }
     // Maps component types to a dictionary of EntityIDs and their component instances.
     // This is a more efficient structure for querying entities by component type, which is a common operation in ECS.
@@ -49,7 +145,6 @@ public sealed class World
     // Versioning and Synchronization
     private long _worldEventBufferVersionUpdate;
     private long _worldEventBufferVersionFixedUpdate;
-
 
     public enum EWorldPhase
     {
@@ -88,10 +183,10 @@ public sealed class World
         _systems = new Dictionary<Type, IGameSystem>();
         Phases = new Dictionary<EWorldPhase, WorldPhase>
         {
-            [EWorldPhase.Command] = new WorldPhase(this),
-            [EWorldPhase.Simulation] = new WorldPhase(this),
-            [EWorldPhase.EventProcessing] = new WorldPhase(this),
-            [EWorldPhase.Presentation] = new WorldPhase(this)
+            [EWorldPhase.Command] = new WorldPhase(),
+            [EWorldPhase.Simulation] = new WorldPhase(),
+            [EWorldPhase.EventProcessing] = new WorldPhase(),
+            [EWorldPhase.Presentation] = new WorldPhase()
         };
 
         // Initialize versioning
@@ -204,14 +299,40 @@ public sealed class World
         Debug.Log($"Remove component from World: {typeof(T)} for EntityID: {entityId}");
     }
 
-    // Try to get component, return false if entity does not exist or doesn't have the component.
-    public bool GetComponentFromEntity<T>(EntityID entityId, out T component) where T : IComponent
+    // Get component, return a ref. This is so that we don't unintentionally copy struct when we don't need
+    // We return a ref so we are not creating a new copy for struct and this is modifiable
+    public ref T GetComponentFromEntity<T>(EntityID entityId) where T : IComponent
     {
-        component = default;
-        if (((ComponentPool<T>)_entityComponentPool[typeof(T)]).TryGet(entityId, out component))
+        if (!_entityComponentPool.TryGetValue(typeof(T), out IComponentPool pool))
         {
+            throw new InvalidOperationException($"Component pool {typeof(T)} does not exist.");
+        }
+
+        return ref ((ComponentPool<T>)pool).GetRef(entityId);
+    }
+
+    // Try get does return a copy of the struct so it SHOULD ONLY BE USED FOR READING, not modifying
+    public bool TryGetComponentFromEntity<T>(EntityID entityId, out T component) where T : IComponent
+    {
+        if (_entityComponentPool.TryGetValue(typeof(T), out IComponentPool pool) && ((ComponentPool<T>)pool).TryGet(entityId, out T _component))
+        {
+            component = _component;
             return true;
         }
+
+        component = default;
         return false;
+    }
+
+    // the TRyGet (out) pattern of Unity return a copy for struct so beware of that
+    public IEnumerable<EntityID> GetEntitiesWithComponent<T>() where T : IComponent
+    {
+        if (_entityComponentPool.TryGetValue(typeof(T), out IComponentPool pool))
+        {
+            ComponentPool<T> typed = (ComponentPool<T>)pool;
+            return typed.GetEntityIDs();
+        }
+
+        return Enumerable.Empty<EntityID>();
     }
 }

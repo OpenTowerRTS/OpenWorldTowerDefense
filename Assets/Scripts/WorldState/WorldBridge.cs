@@ -13,11 +13,27 @@ public class WorldBridge : MonoBehaviour
         // Temporary: Add SelectSystem to the world for testing. In the future, systems should be added and initialized by a Central Manager.
         SelectSystem selectSystem = new();
         HighlightSystem highlightSystem = new();
+        MovementCommandProcessingSystem movementCommandProcessingSystem = new();
+        MovementResolutionSystem movementResolutionSystem = new();
+        PathFindingSystem pathFindingSystem = new();
+        PathFollowingSystem pathFollowingSystem = new();
+        PhysicSyncSystem physicSyncSystem = new();
+
         selectSystem.Initialize(World);
         highlightSystem.Initialize(World);
+        movementCommandProcessingSystem.Initialize(World);
+        movementResolutionSystem.Initialize(World);
+        pathFindingSystem.Initialize(World);
+        pathFollowingSystem.Initialize(World);
+        physicSyncSystem.Initialize(World);
 
         World.Phases[World.EWorldPhase.Command].AddSystem(selectSystem);
         World.Phases[World.EWorldPhase.Presentation].AddSystem(highlightSystem);
+        World.Phases[World.EWorldPhase.Command].AddSystem(movementCommandProcessingSystem);
+        World.Phases[World.EWorldPhase.Simulation].AddSystem(movementResolutionSystem);
+        World.Phases[World.EWorldPhase.Simulation].AddSystem(pathFindingSystem);
+        World.Phases[World.EWorldPhase.Simulation].AddSystem(pathFollowingSystem);
+        World.Phases[World.EWorldPhase.Simulation].AddSystem(physicSyncSystem);
     }
     // Initialize the World and Central Manager here
 
