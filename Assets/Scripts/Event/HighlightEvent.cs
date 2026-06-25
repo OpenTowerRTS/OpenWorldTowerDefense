@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-public readonly struct HighlightEntitiesEvent
+public readonly struct HighlightEntitiesEvent : IEvent
 {
     public IReadOnlyList<EntityID> EntityIDs { get; }
 
