@@ -8,5 +8,6 @@ public static class ComponentRegistry
         typeof(SelectableComponent),
         typeof(MovementTargetComponent),
         typeof(PathComponent),
+        typeof(HealthComponent), // Added for Task #17
     };
 }
