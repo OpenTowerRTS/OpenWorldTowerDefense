@@ -17,14 +17,26 @@ public class PlayerInputHandler : MonoBehaviour
             float edgeSize = 25f; // How many pixels from the edge triggers the movement
 
             // Make sure the mouse is actually inside the game window
-            if (mousePos.x >= 0 && mousePos.x <= Screen.width && 
+            if (mousePos.x >= 0 && mousePos.x <= Screen.width &&
                 mousePos.y >= 0 && mousePos.y <= Screen.height)
             {
-                if (mousePos.x < edgeSize) totalPan.x -= 1f;
-                else if (mousePos.x > Screen.width - edgeSize) totalPan.x += 1f;
+                if (mousePos.x < edgeSize)
+                {
+                    totalPan.x -= 1f;
+                }
+                else if (mousePos.x > Screen.width - edgeSize)
+                {
+                    totalPan.x += 1f;
+                }
 
-                if (mousePos.y < edgeSize) totalPan.y -= 1f;
-                else if (mousePos.y > Screen.height - edgeSize) totalPan.y += 1f;
+                if (mousePos.y < edgeSize)
+                {
+                    totalPan.y -= 1f;
+                }
+                else if (mousePos.y > Screen.height - edgeSize)
+                {
+                    totalPan.y += 1f;
+                }
             }
         }
 
