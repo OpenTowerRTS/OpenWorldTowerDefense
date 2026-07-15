@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\Interface\ICommand.cs" />
     <Compile Include="Assets\Scripts\Interface\System\IGameSystem.cs" />
+    <Compile Include="Assets\Scripts\Display\GridShadowWithShader.cs" />
     <Compile Include="Assets\Scripts\WorldState\EventBus.cs" />
     <Compile Include="Assets\Scripts\System\SelectSystem.cs" />
     <Compile Include="Assets\Scripts\WorldState\EventBuffer.cs" />
@@ -63,17 +64,23 @@
     <Compile Include="Assets\Scripts\EntityView.cs" />
     <Compile Include="Assets\Scripts\Author\SelectComponentAuthor.cs" />
     <Compile Include="Assets\Scripts\Struct\GameEntity.cs" />
+    <Compile Include="Assets\Scripts\Author\GridSnappableComponentAuthor.cs" />
+    <Compile Include="Assets\Scripts\Monobehaviour\GridSnapper.cs" />
     <Compile Include="Assets\Scripts\Struct\SelectComponent.cs" />
+    <Compile Include="Assets\Scripts\Utils\MeshUtils.cs" />
     <Compile Include="Assets\Scripts\System\PhysicSyncSystem.cs" />
     <Compile Include="Assets\Scripts\Struct\PathComponent.cs" />
     <Compile Include="Assets\Scripts\WorldState\WorldPhase.cs" />
     <Compile Include="Assets\Scripts\Struct\ComponentRegistry.cs" />
     <Compile Include="Assets\Scripts\Command\SelectCommand.cs" />
+    <Compile Include="Assets\Scripts\Monobehaviour\InfiniteGridRenderer.cs" />
     <Compile Include="Assets\Scripts\Input\PlayerInputHandler.cs" />
     <Compile Include="Assets\Scripts\WorldState\World.cs" />
     <Compile Include="Assets\Scripts\WorldState\WorldBridge.cs" />
+    <Compile Include="Assets\Scripts\Display\GridShadow.cs" />
     <Compile Include="Assets\Scripts\Input\PlayerInput.cs" />
     <Compile Include="Assets\Scripts\System\MovementResolutionSystem.cs" />
+    <Compile Include="Assets\Scripts\Struct\GripSnappableComponent.cs" />
     <Compile Include="Assets\Scripts\System\PathFindingSystem.cs" />
     <Compile Include="Assets\Scripts\Command\MoveCommand.cs" />
     <Compile Include="Assets\Scripts\Struct\MovementComponent.cs" />
@@ -83,8 +90,10 @@
     <Compile Include="Assets\Scripts\System\constant.cs" />
     <Compile Include="Assets\Scripts\Calculator.cs" />
     <Compile Include="Assets\Scripts\Interface\IEvent.cs" />
+    <Compile Include="Assets\Scripts\Utils\GridUtils.cs" />
     <Compile Include="Assets\Scripts\System\HighlightSystem.cs" />
     <Compile Include="Assets\Scripts\System\PathFollowingSystem.cs" />
+    <Compile Include="Assets\Scripts\System\GridSnapSystem.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Scripts\Game.Runtime.asmdef" />

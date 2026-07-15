@@ -126,10 +126,16 @@ public sealed class World
     // This is a more efficient structure for querying entities by component type, which is a common operation in ECS.
     private Dictionary<Type, IComponentPool> _entityComponentPool;
 
+    // A dictionary mapping EntityID to a set of component pools that the entity is part of. This allows for efficient removal of all components associated with an entity when it is unregistered.
+    private Dictionary<EntityID, HashSet<IComponentPool>> _entityPools;
+
     // Still need reference to gameObject for now since we need to manipulate the GameObject in presentation system.
     private Dictionary<EntityID, GameObject> _entityObjects;
 
+    // Entity Registry
+    private HashSet<EntityID> _registeredEntities;
     // Event and Command State
+
     public EventBus EventBus { get; private set; }
     public CommandBuffer Commands { get; private set; }
     public EventBuffer Events { get; private set; }
@@ -168,6 +174,8 @@ public sealed class World
         // Initialize Entity Data
         _entityComponentPool = new Dictionary<Type, IComponentPool>();
         _entityObjects = new Dictionary<EntityID, GameObject>();
+        _entityPools = new Dictionary<EntityID, HashSet<IComponentPool>>();
+        _registeredEntities = new HashSet<EntityID>();
 
         // Initialize component pools for each component type. This allows us to efficiently manage components of different types.
         foreach (Type componentType in ComponentRegistry.Types)
@@ -199,7 +207,8 @@ public sealed class World
     public EntityID RegisterEntity()
     {
         EntityID entityId = EntityIDGenerator.GenerateID(); // Generate a unique EntityID
-
+        _entityPools[entityId] = new HashSet<IComponentPool>(); // Initialize an empty set of component pools for this entity
+        _registeredEntities.Add(entityId);
         Debug.Log($"EntityView with EntityID {entityId} registered to the world.");
         return entityId;
     }
@@ -208,10 +217,25 @@ public sealed class World
     public EntityID RegisterEntity(GameObject entityObject)
     {
         EntityID entityId = EntityIDGenerator.GenerateID(); // Generate a unique EntityID
+        _entityPools[entityId] = new HashSet<IComponentPool>();
         _entityObjects[entityId] = entityObject; // Store the GameObject for this entity
+        _registeredEntities.Add(entityId);
 
         Debug.Log($"EntityView with EntityID {entityId} registered to the world.");
         return entityId;
+    }
+
+    public bool UnregisterEntity(EntityID entityId)
+    {
+        foreach (IComponentPool pool in _entityPools[entityId])
+        {
+            pool.Remove(entityId);
+        }
+        _entityPools.Remove(entityId);
+        _entityObjects.Remove(entityId);
+        _registeredEntities.Remove(entityId);
+        Debug.Log($"EntityView with EntityID {entityId} unregistered from the world.");
+        return true;
     }
 
     // Update is called once per frame
@@ -244,6 +268,7 @@ public sealed class World
 
     }
 
+    // Only Physics Sync should be in FixedUpdate
     public void FixedUpdate(float fixedDeltaTime)
     {
         // Debug.Log($"World FixedUpdate checked");
@@ -290,12 +315,14 @@ public sealed class World
     {
         // We make sure to create an entry for each entity in RegisterEntity, so we can assume the entityId is always valid and has an entry in _entityComponents.
         ((ComponentPool<T>)_entityComponentPool[typeof(T)]).Add(entityId, component);
+        _entityPools[entityId].Add(_entityComponentPool[typeof(T)]); // Add the component pool to the entity's set of component pools
         Debug.Log($"Add component to World: {typeof(T)} for EntityID: {entityId}");
     }
 
     public void RemoveComponentFromEntity<T>(EntityID entityId) where T : IComponent
     {
         ((ComponentPool<T>)_entityComponentPool[typeof(T)]).Remove(entityId);
+        _entityPools[entityId].Remove(_entityComponentPool[typeof(T)]); // Remove the component pool from the entity's set of component pools
         Debug.Log($"Remove component from World: {typeof(T)} for EntityID: {entityId}");
     }
 

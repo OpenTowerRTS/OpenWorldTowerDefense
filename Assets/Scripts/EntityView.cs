@@ -10,5 +10,7 @@ public class EntityView : MonoBehaviour
         {
             author.RegisterToWorld(WorldBridge.World, EntityID);
         }
+
+        // Need to traverse through children to find all PhysicalBridge components and register them to the world as well.
     }
 }

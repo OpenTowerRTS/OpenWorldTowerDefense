@@ -18,6 +18,7 @@ public class WorldBridge : MonoBehaviour
         PathFindingSystem pathFindingSystem = new();
         PathFollowingSystem pathFollowingSystem = new();
         PhysicSyncSystem physicSyncSystem = new();
+        GridSnapSystem gridSnapSystem = new();
 
         selectSystem.Initialize(World);
         highlightSystem.Initialize(World);
@@ -26,8 +27,10 @@ public class WorldBridge : MonoBehaviour
         pathFindingSystem.Initialize(World);
         pathFollowingSystem.Initialize(World);
         physicSyncSystem.Initialize(World);
+        gridSnapSystem.Initialize(World);
 
         World.Phases[World.EWorldPhase.Command].AddSystem(selectSystem);
+        World.Phases[World.EWorldPhase.Presentation].AddSystem(gridSnapSystem);
         World.Phases[World.EWorldPhase.Presentation].AddSystem(highlightSystem);
         World.Phases[World.EWorldPhase.Command].AddSystem(movementCommandProcessingSystem);
         World.Phases[World.EWorldPhase.Simulation].AddSystem(movementResolutionSystem);
