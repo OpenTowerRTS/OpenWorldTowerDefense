@@ -63,6 +63,7 @@
     <Compile Include="Assets\Scripts\System\MovementCommandProcessingSystem.cs" />
     <Compile Include="Assets\Scripts\Interface\Component\IComponent.cs" />
     <Compile Include="Assets\Scripts\Author\MovementComponentAuthor.cs" />
+    <Compile Include="Assets\Scripts\Command\CameraZoomCommand.cs" />
     <Compile Include="Assets\Scripts\Command\CameraMoveCommand.cs" />
     <Compile Include="Assets\Scripts\EntityView.cs" />
     <Compile Include="Assets\Scripts\Author\SelectComponentAuthor.cs" />
