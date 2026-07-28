@@ -20,29 +20,28 @@ public class PlayerInputHandler : MonoBehaviour
 
         if (Keyboard.current != null && !Keyboard.current.altKey.isPressed && Camera.main != null)
         {
-            Vector3 viewportPos = Camera.main.ScreenToViewportPoint(Mouse.current.position.ReadValue());
-            float edgeThreshold = 0.02f;
+            Vector2 mousePos = Mouse.current.position.ReadValue();
+            float edgeSize = 25f; // Fixed physical pixel size
 
-            if (viewportPos.x >= 0 && viewportPos.x <= 1 && viewportPos.y >= 0 && viewportPos.y <= 1)
+            // TanoVip123 PR Fix: Removed the unnecessary screen bounds wrapper. 
+            // A simple threshold check is sufficient.
+
+            if (mousePos.x < edgeSize)
             {
-                // Added curly braces to satisfy IDE0011
-                if (viewportPos.x < edgeThreshold)
-                {
-                    totalPan.x -= 1f;
-                }
-                else if (viewportPos.x > 1f - edgeThreshold)
-                {
-                    totalPan.x += 1f;
-                }
+                totalPan.x -= 1f;
+            }
+            else if (mousePos.x > Screen.width - edgeSize)
+            {
+                totalPan.x += 1f;
+            }
 
-                if (viewportPos.y < edgeThreshold)
-                {
-                    totalPan.y -= 1f;
-                }
-                else if (viewportPos.y > 1f - edgeThreshold)
-                {
-                    totalPan.y += 1f;
-                }
+            if (mousePos.y < edgeSize)
+            {
+                totalPan.y -= 1f;
+            }
+            else if (mousePos.y > Screen.height - edgeSize)
+            {
+                totalPan.y += 1f;
             }
         }
 
