@@ -34,6 +34,16 @@ public class WorldBridge : MonoBehaviour
         World.Phases[World.EWorldPhase.Simulation].AddSystem(pathFindingSystem);
         World.Phases[World.EWorldPhase.Simulation].AddSystem(pathFollowingSystem);
         World.Phases[World.EWorldPhase.Simulation].AddSystem(physicSyncSystem);
+
+        // Health System
+        HealthUISystem healthUISystem = new();
+        healthUISystem.Initialize(World);
+        World.Phases[World.EWorldPhase.Presentation].AddSystem(healthUISystem);
+
+        // Camera System
+        CameraSystem cameraSystem = new();
+        cameraSystem.Initialize(World);
+        World.Phases[World.EWorldPhase.Presentation].AddSystem(cameraSystem);
     }
     // Initialize the World and Central Manager here
 
