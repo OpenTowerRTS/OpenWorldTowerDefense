@@ -2,12 +2,15 @@
 
 public static class ComponentRegistry
 {
+    // This array holds the types of all components in our game.
+    // The World.cs script reads this array on startup to efficiently allocate memory for each component type.
     public static readonly Type[] Types =
     {
         typeof(MovementComponent),
         typeof(SelectableComponent),
         typeof(MovementTargetComponent),
         typeof(PathComponent),
-        typeof(HealthComponent), // Added for Task #17
+        typeof(HealthComponent),
+        typeof(StatComponent) // <-- We add our new StatComponent here so the World recognizes it!
     };
 }
