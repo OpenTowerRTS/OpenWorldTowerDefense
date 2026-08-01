@@ -17,10 +17,11 @@ public class GridSnapSystem : IUpdatableSystem, IGameSystem
     public void Update(float deltaTime)
     {
         // get current mouse position and convert it to grid position
+        // GridSnappableComponent is a general snapping utillity, we just happen to snap to mouse in this case. In the future we may want to snap to other things like a grid or a specific point in the world.
         Vector3 worldPosition = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
         worldPosition.z = 0f;
 
-        Debug.Log($"GridSnapSystem: Mouse world position: {worldPosition}");
+        // Debug.Log($"GridSnapSystem: Mouse world position: {worldPosition}");
         IEnumerable<EntityID> entities = _world.GetEntitiesWithComponent<GridSnappableComponent>();
         foreach (EntityID entityId in entities)
         {

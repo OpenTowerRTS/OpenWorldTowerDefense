@@ -2,10 +2,8 @@
 
 public class InfiniteGridRenderer : MonoBehaviour
 {
-    [SerializeField] private Camera mainCamera;
-
     private void LateUpdate() => transform.position = new Vector3(
-            mainCamera.transform.position.x,
-            mainCamera.transform.position.y,
+             Camera.main.transform.position.x,
+             Camera.main.transform.position.y,
             0);
 }

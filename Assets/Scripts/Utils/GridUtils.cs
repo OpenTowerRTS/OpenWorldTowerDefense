@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public static class GridUtils
 {
@@ -21,5 +22,29 @@ public static class GridUtils
         float x = (gridPosition.x - gridPosition.y) * tileWidth / 2;
         float y = (gridPosition.x + gridPosition.y) * tileHeight / 2;
         return new Vector2(x, y);
+    }
+
+    public static List<Vector2> ExpandGridTilesToWorldPoints(List<Vector2Int> gridPoints)
+    {
+        List<Vector2> worldpoints = new();
+        foreach (Vector2 p in gridPoints)
+        {
+            worldpoints.Add(new Vector2(p.x, p.y));
+            worldpoints.Add(new Vector2(p.x + 1f, p.y));
+            worldpoints.Add(new Vector2(p.x + 1f, p.y + 1f));
+            worldpoints.Add(new Vector2(p.x, p.y + 1f));
+        }
+        worldpoints = worldpoints.ConvertAll(p => GridUtils.GridToWorld(new Vector2(p.x, p.y)));
+        return worldpoints;
+    }
+
+    public static List<Vector2Int> offsetGridPoints(List<Vector2Int> gridPoints, Vector2Int offset)
+    {
+        List<Vector2Int> offsetPoints = new();
+        foreach (Vector2Int p in gridPoints)
+        {
+            offsetPoints.Add(new Vector2Int(p.x + offset.x, p.y + offset.y));
+        }
+        return offsetPoints;
     }
 }

@@ -8,6 +8,11 @@ public static class ComponentRegistry
         typeof(SelectableComponent),
         typeof(MovementTargetComponent),
         typeof(PathComponent),
+        typeof(HealthComponent),
         typeof(GridSnappableComponent),
+        typeof(PhysicColliderRequest),
+        typeof(GridOccupancyComponent),
+        typeof(GridOccupancyRequest),
+        typeof(BuildingComponent)
     };
 }

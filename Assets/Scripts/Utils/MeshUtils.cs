@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 using System.Linq;
+using UnityEngine;
 
 public class MeshUtils
 {
@@ -21,10 +21,10 @@ public class MeshUtils
             return cmp != 0 ? cmp : a.y.CompareTo(b.y);
         });
 
-        List<Vector2> lower = new List<Vector2>();
-        foreach (var p in points)
+        List<Vector2> lower = new();
+        foreach (Vector2 p in points)
         {
-            while (lower.Count >= 2 && Cross(lower[lower.Count - 2], lower[lower.Count - 1], p) <= 0)
+            while (lower.Count >= 2 && Cross(lower[^2], lower[^1], p) <= 0)
             {
                 lower.RemoveAt(lower.Count - 1);
             }
@@ -32,11 +32,11 @@ public class MeshUtils
             lower.Add(p);
         }
 
-        List<Vector2> upper = new List<Vector2>();
+        List<Vector2> upper = new();
         for (int i = points.Count - 1; i >= 0; i--)
         {
-            var p = points[i];
-            while (upper.Count >= 2 && Cross(upper[upper.Count - 2], upper[upper.Count - 1], p) <= 0)
+            Vector2 p = points[i];
+            while (upper.Count >= 2 && Cross(upper[^2], upper[^1], p) <= 0)
             {
                 upper.RemoveAt(upper.Count - 1);
             }
@@ -51,8 +51,5 @@ public class MeshUtils
         return lower;
     }
 
-    private static float Cross(Vector2 a, Vector2 b, Vector2 c)
-    {
-        return (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
-    }
+    private static float Cross(Vector2 a, Vector2 b, Vector2 c) => ((b.x - a.x) * (c.y - a.y)) - ((b.y - a.y) * (c.x - a.x));
 }

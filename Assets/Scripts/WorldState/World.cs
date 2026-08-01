@@ -5,7 +5,6 @@ using UnityEngine;
 
 public sealed class World
 {
-
     private interface IComponentPool
     {
         public void Remove(EntityID entity);
@@ -152,11 +151,15 @@ public sealed class World
     private long _worldEventBufferVersionUpdate;
     private long _worldEventBufferVersionFixedUpdate;
 
+    // Grid state
+    public GridMap GridMap { get; private set; }
+
     public enum EWorldPhase
     {
         Command,
         Simulation,
         EventProcessing,
+        DataProcessing,
         Presentation
     }
 
@@ -166,6 +169,10 @@ public sealed class World
         EventBus = new EventBus();
         Commands = new CommandBuffer();
         Events = new EventBuffer();
+        GridMap = new GridMap();
+
+        // Initialize GridMap
+        GridMap.initialize();
 
         // Initialize Entity State
         selectedEntities = new List<EntityID>();
@@ -194,7 +201,8 @@ public sealed class World
             [EWorldPhase.Command] = new WorldPhase(),
             [EWorldPhase.Simulation] = new WorldPhase(),
             [EWorldPhase.EventProcessing] = new WorldPhase(),
-            [EWorldPhase.Presentation] = new WorldPhase()
+            [EWorldPhase.Presentation] = new WorldPhase(),
+            [EWorldPhase.DataProcessing] = new WorldPhase()
         };
 
         // Initialize versioning
@@ -258,7 +266,8 @@ public sealed class World
         // Currently only Presentation Systems need to be called in update.
         // The input System is handled by Unity's so it is also considered to be an "Update type" System.
         Phases[EWorldPhase.Presentation].Update(deltaTime);
-
+        Phases[EWorldPhase.Command].Update(deltaTime);
+        Phases[EWorldPhase.DataProcessing].Update(deltaTime);
         _worldEventBufferVersionUpdate = Events.Version;
 
         // For clean lifecycle ownership, Update clock is incharge of updating EventBuffer.
@@ -280,8 +289,7 @@ public sealed class World
 
         // Debug.Log("World FixedUpdate started");
 
-        // Currently only Simulation Systems need to be called in fixed update.
-        Phases[EWorldPhase.Command].FixedUpdate(fixedDeltaTime);
+        // TODO: Only Simulation Systems need to be called in fixed update since it syncs the physics simulation. Need fixing.
         Phases[EWorldPhase.EventProcessing].FixedUpdate(fixedDeltaTime);
         Phases[EWorldPhase.Simulation].FixedUpdate(fixedDeltaTime);
 
