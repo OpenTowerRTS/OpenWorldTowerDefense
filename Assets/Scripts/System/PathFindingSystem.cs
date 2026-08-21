@@ -23,13 +23,13 @@ public class PathFindingSystem : IGameSystem, IFixedUpdatableSystem
         foreach (EntityID entityId in entities)
         {
             MovementTargetComponent movementTarget = _world.GetComponentFromEntity<MovementTargetComponent>(entityId);
-            if (!_world.TryGetComponentFromEntity<PathComponent>(entityId, out PathComponent pathComponent) || pathComponent.Version != movementTarget.Version)
+            if (!_world.TryGetComponentFromEntity(entityId, out PathComponent pathComponent) || pathComponent.Version != movementTarget.Version)
             {
                 PathComponent newPathComponent = new(new Vector3[] { movementTarget.TargetPosition }, movementTarget.Version)
                 {
                     CurrentPathIndex = 0
                 };
-                _world.AddComponentToEntity<PathComponent>(entityId, newPathComponent);
+                _world.AddComponentToEntity(entityId, newPathComponent);
             }
         }
     }

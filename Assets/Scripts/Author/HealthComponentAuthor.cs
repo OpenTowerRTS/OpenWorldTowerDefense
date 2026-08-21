@@ -8,6 +8,6 @@ public class HealthComponentAuthor : MonoBehaviour, IComponentAuthor
     {
         // Creates the pure data instance and safely adds it to the ECS database
         HealthComponent health = new(maxHealth);
-        world.AddComponentToEntity<HealthComponent>(entityId, health);
+        world.AddComponentToEntity(entityId, health);
     }
 }

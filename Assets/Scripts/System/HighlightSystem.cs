@@ -16,7 +16,7 @@ public class HighlightSystem : IUpdatableSystem, IGameSystem
     public void Update(float deltaTime)
     {
         //Debug.Log("HighlightSystem Update called");
-        if (_world.Events.GetEvents<HighlightEntitiesEvent>(out List<HighlightEntitiesEvent> highlightEvents) && highlightEvents.Count > 0)
+        if (_world.Events.GetEvents(out List<HighlightEntitiesEvent> highlightEvents) && highlightEvents.Count > 0)
         {
             Debug.Log($"HighlightSystem received {highlightEvents.Count} HighlightEntitiesEvent(s)");
             foreach (HighlightEntitiesEvent highlightEvent in highlightEvents)
@@ -29,7 +29,7 @@ public class HighlightSystem : IUpdatableSystem, IGameSystem
                     // Logic to unhighlight the entity, e.g., remove highlight component or change material
                     if (WorldBridge.World.GetEntityObject(entityId, out GameObject entityObject))
                     {
-                        if (entityObject.TryGetComponent<HighlightDisplay>(out HighlightDisplay display))
+                        if (entityObject.TryGetComponent(out HighlightDisplay display))
                         {
                             display.SetHighlight(false);
                         }
@@ -42,7 +42,7 @@ public class HighlightSystem : IUpdatableSystem, IGameSystem
                     // Logic to highlight the entity, e.g., add highlight component or change material
                     if (WorldBridge.World.GetEntityObject(entityID, out GameObject entityObject))
                     {
-                        if (entityObject.TryGetComponent<HighlightDisplay>(out HighlightDisplay display))
+                        if (entityObject.TryGetComponent(out HighlightDisplay display))
                         {
                             display.SetHighlight(true);
                         }
