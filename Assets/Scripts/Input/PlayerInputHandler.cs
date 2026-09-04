@@ -72,8 +72,8 @@ public class PlayerInputHandler : MonoBehaviour
             RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
 
             if (hit &&
-                hit.collider.gameObject.TryGetComponent<EntityView>(out EntityView entityView) &&
-                WorldBridge.World.TryGetComponentFromEntity<SelectableComponent>(entityView.EntityID, out SelectableComponent _))
+                hit.collider.gameObject.TryGetComponent(out EntityView entityView) &&
+                WorldBridge.World.TryGetComponentFromEntity(entityView.EntityID, out SelectableComponent _))
             {
                 WorldBridge.World.Commands.AddCommand(new SelectCommand(entityView.EntityID));
             }

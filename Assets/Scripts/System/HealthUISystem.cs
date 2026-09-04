@@ -28,7 +28,7 @@ public class HealthUISystem : IGameSystem, IUpdatableSystem
             if (_world.GetEntityObject(entityId, out GameObject entityObject))
             {
                 // 4. Update the visual slider if it has one
-                if (entityObject.TryGetComponent<HealthUIDisplay>(out HealthUIDisplay display))
+                if (entityObject.TryGetComponent(out HealthUIDisplay display))
                 {
                     display.UpdateHealth(health.CurrentHealth, health.MaxHealth);
                 }
