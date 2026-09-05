@@ -11,5 +11,5 @@ public class MovementComponentAuthor : MonoBehaviour, IComponentAuthor
         MovementComponent = new MovementComponent(maxSpeed, arrivalRadius);
 
     // Register the MovementComponent with the world. This allows entities to have movement capabilities.
-    public void RegisterToWorld(World world, EntityID entityId) => world.AddComponentToEntity<MovementComponent>(entityId, MovementComponent);
+    public void RegisterToWorld(World world, EntityID entityId) => world.AddComponentToEntity(entityId, MovementComponent);
 }

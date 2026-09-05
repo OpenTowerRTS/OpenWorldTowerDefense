@@ -20,7 +20,7 @@ public class SelectSystem : IUpdatableSystem, IBaseGameSystem
     public void Update(float deltaTime)
     {
         // Debug.Log("SelectSystem Update called");
-        if (_world.Commands.GetCommands<SelectCommand>(out List<SelectCommand> _selectCommands) && _selectCommands.Count > 0)
+        if (_world.Commands.GetCommands(out List<SelectCommand> _selectCommands) && _selectCommands.Count > 0)
         {
             foreach (SelectCommand command in _selectCommands)
             {

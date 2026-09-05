@@ -40,17 +40,22 @@ public class BuildingSystem : IUpdatableSystem, IGameSystem
             {
                 Debug.Log($"BuildingSystem received PlaceBuildingCommand for BuildingID: {command.BuildingID} at Position: {command.Position}");
                 BuildingDefinition buildingDefinition = GameBootstrap.DefinitionDatabase.GetBuildingDefinition(command.BuildingID);
+                // Raise if building prefab does not have BuildingComponentAuthor
+                if (!buildingDefinition.BuildingPrefab.TryGetComponent<BuildingComponentAuthor>(out BuildingComponentAuthor buildingAuthor))
+                {
+                    Debug.LogError($"BuildingPrefab for BuildingID: {command.BuildingID} does not have a BuildingComponentAuthor component.");
+                    return;
+                }
+
+                if (buildingAuthor.buildingId != command.BuildingID)
+                {
+                    Debug.LogError($"BuildingPrefab's BuildingComponentAuthor buildingId ({buildingAuthor.buildingId}) does not match the command's BuildingID ({command.BuildingID.Value}).");
+                    return;
+                }
                 Vector2 gridPosition = GridUtils.WorldToGrid(command.Position);
                 Vector2 worldPositionFromGrid = GridUtils.GridToWorld(gridPosition);
                 Debug.Log($"BuildingSystem received Final placement PlaceBuildingCommand for BuildingID: {command.BuildingID} at Position: {worldPositionFromGrid}");
-                GameObject building = GameObject.Instantiate(buildingDefinition.BuildingPrefab, new Vector3(worldPositionFromGrid.x, worldPositionFromGrid.y, 0), Quaternion.identity);
-                // We register all component using a Building Authoring System for consistency. However, if the Prefab BuildingId and the command building Id differs, the commmand buildingId wins
-                // The prexisting buildingAuthoring is only for register building already in the scene
-                if (!building.TryGetComponent<BuildingComponentAuthor>(out BuildingComponentAuthor buildingAuthor))
-                {
-                    buildingAuthor = building.AddComponent<BuildingComponentAuthor>();
-                }
-                buildingAuthor.buildingId = command.BuildingID;
+                GameObject.Instantiate(buildingDefinition.BuildingPrefab, new Vector3(worldPositionFromGrid.x, worldPositionFromGrid.y, 0), Quaternion.identity);
             }
         }
     }

@@ -10,5 +10,5 @@ public class SelectComponentAuthor : MonoBehaviour, IComponentAuthor
         SelectableComponent = new SelectableComponent();
 
     // Register the SelectableComponent with the world. This allows entities to be marked as selectable.
-    public void RegisterToWorld(World world, EntityID entityId) => world.AddComponentToEntity<SelectableComponent>(entityId, SelectableComponent);
+    public void RegisterToWorld(World world, EntityID entityId) => world.AddComponentToEntity(entityId, SelectableComponent);
 }

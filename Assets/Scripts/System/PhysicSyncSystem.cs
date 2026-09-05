@@ -20,7 +20,7 @@ public class PhysicSyncSystem : IGameSystem, IFixedUpdatableSystem
         Debug.Log($"PhysicSyncSystem: {entities.Count()} entities");
         foreach (EntityID entityId in entities)
         {
-            if (_world.GetEntityObject(entityId, out GameObject entityObject) && entityObject.TryGetComponent<Rigidbody2D>(out Rigidbody2D rb) && _world.TryGetComponentFromEntity<MovementComponent>(entityId, out MovementComponent movementComponent))
+            if (_world.GetEntityObject(entityId, out GameObject entityObject) && entityObject.TryGetComponent(out Rigidbody2D rb) && _world.TryGetComponentFromEntity(entityId, out MovementComponent movementComponent))
             {
                 rb.linearVelocity = new Vector2(movementComponent.CurrSpeed.x, movementComponent.CurrSpeed.y);
                 Debug.Log($"PhysicSyncSystem: EntityID {entityId} set Rigidbody speed to {rb.linearVelocity} currSpeed is {movementComponent.CurrSpeed}");

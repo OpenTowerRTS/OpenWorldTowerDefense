@@ -16,19 +16,19 @@ public class MovementCommandProcessingSystem : IGameSystem, IUpdatableSystem
 
     public void Update(float deltaTime)
     {
-        if (_world.Commands.GetCommands<MoveCommand>(out List<MoveCommand> movementCommands) && movementCommands.Count > 0)
+        if (_world.Commands.GetCommands(out List<MoveCommand> movementCommands) && movementCommands.Count > 0)
         {
             Debug.Log($"MovementCommandProcessingSystem received {movementCommands.Count} MoveCommand(s)");
             foreach (MoveCommand command in movementCommands)
             {
                 foreach (EntityID entityId in command.TargetEntityIDs)
                 {
-                    if (_world.TryGetComponentFromEntity<MovementComponent>(entityId, out MovementComponent _))
+                    if (_world.TryGetComponentFromEntity(entityId, out MovementComponent _))
                     {
                         // Add or update the MovementTargetComponent for the entity with the target position from the command
-                        if (!_world.TryGetComponentFromEntity<MovementTargetComponent>(entityId, out MovementTargetComponent _))
+                        if (!_world.TryGetComponentFromEntity(entityId, out MovementTargetComponent _))
                         {
-                            _world.AddComponentToEntity<MovementTargetComponent>(entityId, new MovementTargetComponent(command.TargetPosition));
+                            _world.AddComponentToEntity(entityId, new MovementTargetComponent(command.TargetPosition));
                         }
                         else
                         {

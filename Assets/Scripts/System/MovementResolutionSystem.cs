@@ -29,7 +29,7 @@ public class MovementResolutionSystem : IGameSystem, IFixedUpdatableSystem
                 ref MovementComponent movementComponent = ref _world.GetComponentFromEntity<MovementComponent>(entityId);
                 Debug.Log($"MovementResolutionSystem: distance of entity {entityId}: {dist} with stop={movementComponent.ArrivalRadius}");
                 if (dist < movementComponent.ArrivalRadius || movementComponent.ShouldStopNextFrame ||
-                    (_world.TryGetComponentFromEntity<PathComponent>(entityId, out PathComponent pathComponent) && pathComponent.CurrentPathIndex == pathComponent.PathPoints.Length))
+                    (_world.TryGetComponentFromEntity(entityId, out PathComponent pathComponent) && pathComponent.CurrentPathIndex == pathComponent.PathPoints.Length))
                 {
                     Debug.Log($"Reset Movement for Entity: {entityId}");
                     _world.RemoveComponentFromEntity<MovementTargetComponent>(entityId);

@@ -8,11 +8,11 @@ public struct BuildingId
 
     public BuildingId(string value) => Value = value;
 
-    public readonly bool Equals(BuildingId other)
-        => Value == other.Value;
+    public static bool operator ==(BuildingId a, BuildingId b) => a.Value == b.Value;
+    public static bool operator !=(BuildingId a, BuildingId b) => a.Value != b.Value;
 
     public override readonly bool Equals(object obj)
-        => obj is BuildingId other && Equals(other);
+        => obj is BuildingId other && this == other;
 
     public override readonly int GetHashCode()
         => Value.GetHashCode();
