@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3853435536316916870}
   - component: {fileID: 8783665673346210418}
   - component: {fileID: 7957942803768541757}
+  - component: {fileID: 7740023471404066956}
   m_Layer: 0
   m_Name: TestingBuidling1
   m_TagString: Untagged
@@ -61,6 +62,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: Game.Runtime::BuildingComponentAuthor
   buildingId:
     Value: TestBuilding1
+--- !u!114 &7740023471404066956
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2340122517374870011}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9809bf1345abc5648af68b3a82653f08, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: NavMeshPlus::NavMeshPlus.Components.NavMeshModifier
+  m_OverrideArea: 1
+  m_Area: 1
+  m_IgnoreFromBuild: 0
+  m_AffectedAgents: ffffffff
 --- !u!1 &6786866851744787683
 GameObject:
   m_ObjectHideFlags: 0
@@ -152,7 +169,7 @@ SpriteRenderer:
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
-  m_SpriteSortPoint: 0
+  m_SpriteSortPoint: 1
 --- !u!114 &6510126714164410398
 MonoBehaviour:
   m_ObjectHideFlags: 0

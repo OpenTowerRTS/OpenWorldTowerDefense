@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -24,22 +25,37 @@ public class PathFollowingSystem : IGameSystem, IFixedUpdatableSystem
             ref PathComponent pathComponent = ref _world.GetComponentFromEntity<PathComponent>(entityId);
             int currIndex = pathComponent.CurrentPathIndex;
             int pathLength = pathComponent.PathPoints.Length;
-            // If we reach the end of the path, skip
-            Debug.Log($"currIndex:{currIndex}; pathLength: {pathComponent.PathPoints.Length}");
-            if (currIndex == pathLength)
+            if (pathComponent.CurrentPathIndex == pathLength)
             {
+                Debug.Log($"NavigationSystemTest Destination reached currIndex:{currIndex}; pathLength: {pathComponent.PathPoints.Length}");
                 continue;
             }
+            Debug.Log($"NavigationSystemTest CurrentPath {string.Join(", ", pathComponent.PathPoints)}");
+            // If we reach the end of the path, skip
+            Debug.Log($"NavigationSystemTest currIndex:{currIndex}; pathLength: {pathComponent.PathPoints.Length}");
+            Debug.Log($"NavigationSystemTest CrossCheck CurrentPathIndex: {currIndex} CurrentPathPoint: {pathComponent.PathPoints[currIndex]}");
 
             if (_world.GetEntityObject(entityId, out GameObject entityObject))
             {
                 // Move forward if are at the way point
                 ref MovementComponent movementComponent = ref _world.GetComponentFromEntity<MovementComponent>(entityId);
-                float dist = Vector3.Distance(entityObject.transform.position, pathComponent.PathPoints[currIndex]);
-                if (dist < movementComponent.ArrivalRadius || pathComponent.ShouldAdvanceNextFrame)
+                // Debug.Log($"NavigationSystemTest PathFollowingSystem: distance of entity {entityId}: {dist}");
+                Debug.Log($"NavigationSystemTest PathShoudAdvance: {pathComponent.ShouldAdvanceNextFrame}");
+                // Debug.Log($"NavigationSystemTest ArrivalRadius: {dist < movementComponent.ArrivalRadius}");
+                if (pathComponent.ShouldAdvanceNextFrame)
                 {
                     pathComponent.ShouldAdvanceNextFrame = false;
                     currIndex += 1;
+                    pathComponent.CurrentPathIndex += 1;
+                    Debug.Log($"NavigationSystemTest UpdateIndex CurrIndex {currIndex} CurrentPathIndex {pathComponent.CurrentPathIndex}, PathShoudAdvanceRest: {pathComponent.ShouldAdvanceNextFrame}");
+                }
+                if (currIndex < pathLength)
+                {
+                    Debug.Log($"NavigationSystemTest CurrentPathIndex: {currIndex} CurrentPathPoint: {pathComponent.PathPoints[currIndex]}");
+                }
+                else
+                {
+                    Debug.Log($"NavigationSystemTest Destination reached currIndex:{currIndex}; pathLength: {pathComponent.PathPoints.Length}");
                 }
 
                 //in C#, a method that returns ref T can be used in two different ways:
@@ -48,14 +64,16 @@ public class PathFollowingSystem : IGameSystem, IFixedUpdatableSystem
 
                 if (currIndex < pathLength)
                 {
+                    float dist = Vector3.Distance(entityObject.transform.position, pathComponent.PathPoints[currIndex]);
                     Vector3 dir = Vector3.Normalize(pathComponent.PathPoints[currIndex] - entityObject.transform.position);
                     movementComponent.CurrSpeed = dir * movementComponent.MaxSpeed;
-                    Debug.Log($"Moving entity {entityId} to {pathComponent.PathPoints[currIndex]} at speed {movementComponent.CurrSpeed}");
-                    Debug.Log($"Speed from database = {_world.GetComponentFromEntity<MovementComponent>(entityId).CurrSpeed}");
-                    Debug.Log($"PathFollowingSystem: distance of entity {entityId}: {Vector3.Distance(entityObject.transform.position, pathComponent.PathPoints[currIndex])}");
-
+                    Debug.Log($"NavigationSystemTest Moving entity {entityId} to {pathComponent.PathPoints[currIndex]} at speed {movementComponent.CurrSpeed}");
+                    Debug.Log($"NavigationSystemTest Speed from database = {_world.GetComponentFromEntity<MovementComponent>(entityId).CurrSpeed}");
                     pathComponent.ShouldAdvanceNextFrame = movementComponent.CurrSpeed.magnitude * deltaTime > dist;
+                    Debug.Log($"NavigationSystemTest NextFrameDistance:{movementComponent.CurrSpeed.magnitude * deltaTime}, dist: {dist}, shouldAdvance: {pathComponent.ShouldAdvanceNextFrame}");
+
                 }
+                Debug.Log("NavigationSystemTest loopdone");
 
             }
         }
