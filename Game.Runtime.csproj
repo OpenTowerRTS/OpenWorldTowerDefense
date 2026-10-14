@@ -43,7 +43,7 @@
     <UnityVersion>6000.3.14f1</UnityVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Analyzer Include="C:\Users\nguye\.vscode\extensions\visualstudiotoolsforunity.vstuc-1.3.1\Analyzers\Microsoft.Unity.Analyzers.dll" />
+    <Analyzer Include="C:\Users\nguye\.vscode\extensions\visualstudiotoolsforunity.vstuc-1.3.2\Analyzers\Microsoft.Unity.Analyzers.dll" />
     <Analyzer Include="D:\GameProject\UnityEditor\6000.3.14f1\Editor\Data\Tools\BuildPipeline\Unity.SourceGenerators\Unity.SourceGenerators.dll" />
     <Analyzer Include="D:\GameProject\UnityEditor\6000.3.14f1\Editor\Data\Tools\BuildPipeline\Unity.SourceGenerators\Unity.Properties.SourceGenerator.dll" />
     <Analyzer Include="D:\GameProject\UnityEditor\6000.3.14f1\Editor\Data\Tools\BuildPipeline\Unity.SourceGenerators\Unity.UIToolkit.SourceGenerator.dll" />
@@ -64,8 +64,10 @@
     <Compile Include="Assets\Scripts\Interface\ICommand.cs" />
     <Compile Include="Assets\Scripts\System\CameraSystem.cs" />
     <Compile Include="Assets\Scripts\Interface\System\IGameSystem.cs" />
+    <Compile Include="Assets\Scripts\Components\Requests\RequestId.cs" />
     <Compile Include="Assets\Scripts\Display\GridShadowWithShader.cs" />
     <Compile Include="Assets\Scripts\WorldState\EventBus.cs" />
+    <Compile Include="Assets\Scripts\Monobehaviour\NavigationSystemManager.cs" />
     <Compile Include="Assets\Scripts\Author\StatComponentAuthor.cs" />
     <Compile Include="Assets\Scripts\System\SelectSystem.cs" />
     <Compile Include="Assets\Scripts\WorldState\EventBuffer.cs" />
@@ -86,23 +88,26 @@
     <Compile Include="Assets\Scripts\Components\BuildingComponent.cs" />
     <Compile Include="Assets\Scripts\Components\GameEntity.cs" />
     <Compile Include="Assets\Scripts\Components\GridOccupancyComponent.cs" />
-    <Compile Include="Assets\Scripts\EntityView.cs" />
     <Compile Include="Assets\Scripts\Author\SelectComponentAuthor.cs" />
     <Compile Include="Assets\Scripts\Components\GripSnappableComponent.cs" />
     <Compile Include="Assets\Scripts\Components\Requests\GridOccupancyRequest.cs" />
     <Compile Include="Assets\Scripts\UI\IconButton.cs" />
     <Compile Include="Assets\Scripts\System\HealthUISystem.cs" />
     <Compile Include="Assets\Scripts\Author\GridSnappableComponentAuthor.cs" />
+    <Compile Include="Assets\Scripts\Playground\TestNavMeshAgent.cs" />
     <Compile Include="Assets\Scripts\Monobehaviour\GridSnapper.cs" />
     <Compile Include="Assets\Scripts\Utils\MeshUtils.cs" />
     <Compile Include="Assets\Scripts\System\PhysicSyncSystem.cs" />
     <Compile Include="Assets\Scripts\Command\CancelBuildlingToBuildCommand.cs" />
     <Compile Include="Assets\Scripts\WorldState\GameBootstrap.cs" />
+    <Compile Include="Assets\Scripts\Monobehaviour\DefaultPathFinder.cs" />
     <Compile Include="Assets\Scripts\System\BuildlingSystem.cs" />
     <Compile Include="Assets\Scripts\Components\SelectComponent.cs" />
     <Compile Include="Assets\Scripts\UI\IconsScrollView.cs" />
     <Compile Include="Assets\Scripts\Constants\BuildingType.cs" />
     <Compile Include="Assets\Scripts\WorldState\WorldPhase.cs" />
+    <Compile Include="Assets\Scripts\Monobehaviour\BuildingSystemManager.cs" />
+    <Compile Include="Assets\Scripts\Components\Requests\PathFindingRequest.cs" />
     <Compile Include="Assets\Scripts\Command\SelectCommand.cs" />
     <Compile Include="Assets\Scripts\Definitions\DefinitionDatabase.cs" />
     <Compile Include="Assets\Scripts\Components\MovementComponent.cs" />
@@ -110,11 +115,12 @@
     <Compile Include="Assets\Scripts\Monobehaviour\InfiniteGridRenderer.cs" />
     <Compile Include="Assets\Scripts\Input\PlayerInputHandler.cs" />
     <Compile Include="Assets\Scripts\WorldState\World.cs" />
-    <Compile Include="Assets\Scripts\WorldState\BuildingSystemManager.cs" />
     <Compile Include="Assets\Scripts\Display\GridShadow.cs" />
     <Compile Include="Assets\Scripts\Input\PlayerInput.cs" />
     <Compile Include="Assets\Scripts\System\MovementResolutionSystem.cs" />
+    <Compile Include="Assets\Scripts\Monobehaviour\EntityView.cs" />
     <Compile Include="Assets\Scripts\Components\PathComponent.cs" />
+    <Compile Include="Assets\Scripts\Interface\Service\IPathFinder.cs" />
     <Compile Include="Assets\Scripts\System\PathFindingSystem.cs" />
     <Compile Include="Assets\Scripts\Command\MoveCommand.cs" />
     <Compile Include="Assets\Scripts\Components\ComponentRegistry.cs" />
@@ -702,6 +708,10 @@
       <HintPath>Library\PackageCache\com.unity.visualscripting@8bed5ad90189\Editor\VisualScripting.Core\Dependencies\YamlDotNet\Unity.VisualScripting.YamlDotNet.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Unity.Cecil.Awesome">
+      <HintPath>Library\PackageCache\com.unity.entities@6ce362df365b\Unity.Entities.CodeGen\Unity.Cecil.Awesome.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Unity.Collections.LowLevel.ILSupport">
       <HintPath>Library\PackageCache\com.unity.collections@84e8eb3fc12e\Unity.Collections.LowLevel.ILSupport\Unity.Collections.LowLevel.ILSupport.dll</HintPath>
       <Private>False</Private>
@@ -748,10 +758,6 @@
     </Reference>
     <Reference Include="Mono.Cecil">
       <HintPath>Library\PackageCache\com.unity.nuget.mono-cecil@ecb9724e46ff\Mono.Cecil.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Unity.Cecil.Awesome">
-      <HintPath>Library\PackageCache\com.unity.entities@6ce362df365b\Unity.Entities.CodeGen\Unity.Cecil.Awesome.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Unity.Android.Types">
@@ -1268,6 +1274,14 @@
     </Reference>
     <Reference Include="Unity.Collections">
       <HintPath>Library\ScriptAssemblies\Unity.Collections.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.AI.Navigation">
+      <HintPath>Library\ScriptAssemblies\Unity.AI.Navigation.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="NavMeshPlus">
+      <HintPath>Library\ScriptAssemblies\NavMeshPlus.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEditor.UI">

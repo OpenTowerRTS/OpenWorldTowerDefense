@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using NavMeshPlus.Components;
 using UnityEngine;
 
 public class PhysicSyncSystem : IGameSystem, IFixedUpdatableSystem
@@ -23,7 +24,6 @@ public class PhysicSyncSystem : IGameSystem, IFixedUpdatableSystem
             if (_world.GetEntityObject(entityId, out GameObject entityObject) && entityObject.TryGetComponent(out Rigidbody2D rb) && _world.TryGetComponentFromEntity(entityId, out MovementComponent movementComponent))
             {
                 rb.linearVelocity = new Vector2(movementComponent.CurrSpeed.x, movementComponent.CurrSpeed.y);
-                Debug.Log($"PhysicSyncSystem: EntityID {entityId} set Rigidbody speed to {rb.linearVelocity} currSpeed is {movementComponent.CurrSpeed}");
             }
         }
 
@@ -42,13 +42,9 @@ public class PhysicSyncSystem : IGameSystem, IFixedUpdatableSystem
                                 polygonCollider = entityObject.AddComponent<PolygonCollider2D>();
                             }
                             Vector2Int entityGridPosition = Vector2Int.FloorToInt(GridUtils.WorldToGrid(entityObject.transform.position));
-                            // Normalize the tile occupancy first because Collider point is relative to GameObject position but the GridOccupancyComponent is absolute grid position. We need to convert the absolute grid position to relative position based on the GameObject position.
                             List<Vector2> expanded = GridUtils.ExpandGridTilesToWorldPoints(gridOccupancyComponent.occupiedTiles.Select(tile => tile - entityGridPosition).ToList());
-                            // Debug.Log($"BuildingSystem: GridOccupancyComponent tiles: {string.Join(", ", gridOccupancyComponent.occupiedTiles.Select(tile => $"({tile.x}, {tile.y})"))}");
-                            // Debug.Log($"BuildingSystem: expanded point {string.Join(", ", expanded.Select(point => $"({point.x}, {point.y})"))}");
                             List<Vector2> points = MeshUtils.ConvexHull(expanded);
                             polygonCollider.SetPath(0, points);
-                            // Debug.Log($"PhysicSyncSystem: EntityID {entityId} set PolygonCollider2D path with{string.Join(", ", points.Select(tile => $"({tile.x}, {tile.y})"))}");
                         }
                         break;
                     case PhysicShapeType.None:
@@ -64,6 +60,11 @@ public class PhysicSyncSystem : IGameSystem, IFixedUpdatableSystem
                         break;
                 }
                 _world.RemoveComponentFromEntity<PhysicColliderRequest>(entityId);
+                if (entityObject.TryGetComponent(out NavMeshModifier navMeshModifier))
+                {
+                    // Mark NavMesh is dirty if the entity has a NavMeshModifer. This ensure the NavMesh is rebuilt
+                    GameBootstrap.NavigationSystemManager.MarkNavMeshDirty();
+                }
             }
             else
             {

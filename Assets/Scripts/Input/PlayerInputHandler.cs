@@ -34,9 +34,6 @@ public class PlayerInputHandler : MonoBehaviour
             Vector2 mousePos = Mouse.current.position.ReadValue();
             float edgeSize = 25f; // Fixed physical pixel size
 
-            // TanoVip123 PR Fix: Removed the unnecessary screen bounds wrapper.
-            // A simple threshold check is sufficient.
-
             if (mousePos.x < edgeSize)
             {
                 totalPan.x -= 1f;
@@ -138,12 +135,13 @@ public class PlayerInputHandler : MonoBehaviour
         {
             GameBootstrap.World.Commands.AddCommand(new SelectCommand(entityView.EntityID));
         }
-        else
+        // simple move command first. Will have to check if the hit point is on a walkable area or not.
+        else if (GameBootstrap.World.selectedEntities.Count > 0)
         {
             Vector3 worldPosition = Camera.main.ScreenToWorldPoint(mousePosition);
             Vector3 targetPosition = new(worldPosition.x, worldPosition.y, 0);
             GameBootstrap.World.Commands.AddCommand(new MoveCommand(GameBootstrap.World.selectedEntities, targetPosition));
-            Debug.Log($"Added MoveCommand for selected entities to move to position: {targetPosition}");
+            Debug.Log($"Added MoveCommand for selected entities to move to position: {targetPosition} for entities: {string.Join(", ", GameBootstrap.World.selectedEntities)}");
         }
     }
     public void RightClick(InputAction.CallbackContext context)

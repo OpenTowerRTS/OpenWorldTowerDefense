@@ -17,7 +17,7 @@ public class MovementResolutionSystem : IGameSystem, IFixedUpdatableSystem
     {
         // We make sure in CommandPhase that only object with MovementComponent  can have a MovementTargetComponent
         IEnumerable<EntityID> entities = _world.GetEntitiesWithComponent<MovementTargetComponent>();
-        Debug.Log($"MovementResolutionSystem: processing {entities.Count()} entities");
+        // Debug.Log($"MovementResolutionSystem: processing {entities.Count()} entities");
         foreach (EntityID entityId in entities)
         {
             MovementTargetComponent movementTarget = _world.GetComponentFromEntity<MovementTargetComponent>(entityId);
@@ -27,11 +27,11 @@ public class MovementResolutionSystem : IGameSystem, IFixedUpdatableSystem
                 // Or if we reach the end of the path
                 float dist = Vector3.Distance(entityObject.transform.position, movementTarget.TargetPosition);
                 ref MovementComponent movementComponent = ref _world.GetComponentFromEntity<MovementComponent>(entityId);
-                Debug.Log($"MovementResolutionSystem: distance of entity {entityId}: {dist} with stop={movementComponent.ArrivalRadius}");
+                // Debug.Log($"MovementResolutionSystem: distance of entity {entityId}: {dist} with stop={movementComponent.ArrivalRadius}");
                 if (dist < movementComponent.ArrivalRadius || movementComponent.ShouldStopNextFrame ||
                     (_world.TryGetComponentFromEntity(entityId, out PathComponent pathComponent) && pathComponent.CurrentPathIndex == pathComponent.PathPoints.Length))
                 {
-                    Debug.Log($"Reset Movement for Entity: {entityId}");
+                    //Debug.Log($"Reset Movement for Entity: {entityId}");
                     _world.RemoveComponentFromEntity<MovementTargetComponent>(entityId);
                     _world.RemoveComponentFromEntity<PathComponent>(entityId);
                     movementComponent.CurrSpeed = Vector3.zero;
@@ -40,5 +40,11 @@ public class MovementResolutionSystem : IGameSystem, IFixedUpdatableSystem
                 movementComponent.ShouldStopNextFrame = movementComponent.CurrSpeed.magnitude * fixedDeltaTime > dist;
             }
         }
+
+        // At the moment, we have handling for updating the MovementTargetComponent. Meaning that an entity receive a new MovementTarget
+        // Even though the old MovementTarget is not yet reached.
+        // TODO: we don't have handling cancelling Movement all together.
+        // 2 things can be done: either we can add a new CancellingMovemenentEvent + Command that will remove the MovementTarget right away
+        // Or We can add a flag to MovementTargetComponent to indicate that the movement is cancelled. And then we can remove the MovementTargetComponent in this system.
     }
 }
