@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using NavMeshPlus.Components;
 using UnityEngine;
 
 public class PhysicSyncSystem : IGameSystem, IFixedUpdatableSystem
@@ -64,6 +65,11 @@ public class PhysicSyncSystem : IGameSystem, IFixedUpdatableSystem
                         break;
                 }
                 _world.RemoveComponentFromEntity<PhysicColliderRequest>(entityId);
+                if (entityObject.TryGetComponent(out NavMeshModifier navMeshModifier))
+                {
+                    // Mark NavMesh is dirty if the entity has a NavMeshModifer. This ensure the NavMesh is rebuilt
+                    GameBootstrap.NavigationSystemManager.MarkNavMeshDirty();
+                }
             }
             else
             {

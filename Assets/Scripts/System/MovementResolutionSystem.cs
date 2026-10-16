@@ -40,5 +40,11 @@ public class MovementResolutionSystem : IGameSystem, IFixedUpdatableSystem
                 movementComponent.ShouldStopNextFrame = movementComponent.CurrSpeed.magnitude * fixedDeltaTime > dist;
             }
         }
+
+        // At the moment, we have handling for updating the MovementTargetComponent. Meaning that an entity receive a new MovementTarget
+        // Even though the old MovementTarget is not yet reached.
+        // TODO: we don't have handling cancelling Movement all together.
+        // 2 things can be done: either we can add a new CancellingMovemenentEvent + Command that will remove the MovementTarget right away
+        // Or We can add a flag to MovementTargetComponent to indicate that the movement is cancelled. And then we can remove the MovementTargetComponent in this system.
     }
 }

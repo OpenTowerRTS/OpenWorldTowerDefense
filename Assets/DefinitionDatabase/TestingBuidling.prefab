@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3853435536316916870}
   - component: {fileID: 8783665673346210418}
   - component: {fileID: 7957942803768541757}
+  - component: {fileID: 3265365722744003611}
   m_Layer: 0
   m_Name: TestingBuidling
   m_TagString: Untagged
@@ -61,6 +62,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: Game.Runtime::BuildingComponentAuthor
   buildingId:
     Value: TestBuilding
+--- !u!114 &3265365722744003611
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2340122517374870011}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9809bf1345abc5648af68b3a82653f08, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: NavMeshPlus::NavMeshPlus.Components.NavMeshModifier
+  m_OverrideArea: 1
+  m_Area: 1
+  m_IgnoreFromBuild: 0
+  m_AffectedAgents: ffffffff
 --- !u!1 &6786866851744787683
 GameObject:
   m_ObjectHideFlags: 0
@@ -71,7 +88,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2001702682169160036}
   - component: {fileID: 3967343904262989667}
-  - component: {fileID: 6510126714164410398}
   m_Layer: 0
   m_Name: Sprite
   m_TagString: Untagged
@@ -152,17 +168,4 @@ SpriteRenderer:
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
-  m_SpriteSortPoint: 0
---- !u!114 &6510126714164410398
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6786866851744787683}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 58758ad73696848478d4e634c57cbd40, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Game.Runtime::EntityView
-  ComponentRegistered: 0
+  m_SpriteSortPoint: 1

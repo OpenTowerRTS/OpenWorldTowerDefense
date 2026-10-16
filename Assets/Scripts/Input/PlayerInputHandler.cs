@@ -58,7 +58,7 @@ public class PlayerInputHandler : MonoBehaviour
 
         if (totalPan != Vector2.zero && GameBootstrap.World != null)
         {
-            GameBootstrap.World.Commands.AddCommand(new CameraMoveCommand(totalPan));
+            // GameBootstrap.World.Commands.AddCommand(new CameraMoveCommand(totalPan));
         }
     }
 
