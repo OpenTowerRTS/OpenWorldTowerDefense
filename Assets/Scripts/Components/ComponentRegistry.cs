@@ -16,6 +16,7 @@ public static class ComponentRegistry
         typeof(GridOccupancyComponent),
         typeof(GridOccupancyRequest),
         typeof(BuildingComponent),
-        typeof(StatComponent)
+        typeof(StatComponent),
+        typeof(PathFindingRequest)
     };
 }

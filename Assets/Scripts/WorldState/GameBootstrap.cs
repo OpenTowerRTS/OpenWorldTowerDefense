@@ -6,20 +6,35 @@ public class GameBootstrap : MonoBehaviour
     public static World World { get; private set; }
 
     // Temporary leave this BuildingSystemManager variable in GameBootstrap for testing. In the future, we want a GameManager that handle GameBootStrap and other game management tasks.
-    [SerializeField] private BuildingSystemManager buildingSystemManager;
+    [SerializeField]
+    private BuildingSystemManager buildingSystemManager;
     public static BuildingSystemManager BuildingSystemManager { get; private set; }
+
+    // Similarly, Temporary leave this BuildingSystemManager variable in GameBootstrap for testing.
+    [SerializeField]
+    private NavigationSystemManager navigationSystemManager;
+    public static NavigationSystemManager NavigationSystemManager { get; private set; }
 
     // Temporary leave this definitionDatabase variable in GameBootstrap for testing. In the future, we want a GameManager that handle GameBootStrap and other game management tasks.
     // In fact, The World should live in GameManager, not in GameBootstrap. GameBootstrap should only be responsible for initializing the World and other systems, and then pass the World to GameManager.
-    [SerializeField] private DefinitionDatabase definitionDatabase;
+    [SerializeField]
+    private DefinitionDatabase definitionDatabase;
     public static DefinitionDatabase DefinitionDatabase { get; private set; }
 
-    [SerializeField] private PlayerInputHandler playerInputHandler;
+    [SerializeField]
+    private PlayerInputHandler playerInputHandler;
     public static PlayerInputHandler PlayerInputHandler { get; set; }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-
+    private static GameBootstrap _staticGameBootstrap;
     public void Awake()
     {
+        if (_staticGameBootstrap != null && _staticGameBootstrap != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        _staticGameBootstrap = this;
+
         World = new World();
         World.Initialize();
         if (definitionDatabase != null)
@@ -33,17 +48,26 @@ public class GameBootstrap : MonoBehaviour
             BuildingSystemManager = buildingSystemManager;
         }
 
+        if (navigationSystemManager != null)
+        {
+            NavigationSystemManager = navigationSystemManager;
+        }
+
         if (playerInputHandler != null)
         {
             PlayerInputHandler = playerInputHandler;
         }
+    }
+    // Initialize the World and Central Manager here
 
+    public void Start()
+    {
         // Temporary: Add SelectSystem to the world for testing. In the future, systems should be added and initialized by a Central Manager.
         SelectSystem selectSystem = new();
         HighlightSystem highlightSystem = new();
-        MovementCommandProcessingSystem movementCommandProcessingSystem = new();
+        MovementCommandProcessingSystem movementCommandProcessingSystem = new(NavigationSystemManager.getPathFinder());
         MovementResolutionSystem movementResolutionSystem = new();
-        PathFindingSystem pathFindingSystem = new();
+        PathFindingSystem pathFindingSystem = new(NavigationSystemManager.getPathFinder());
         PathFollowingSystem pathFollowingSystem = new();
         PhysicSyncSystem physicSyncSystem = new();
         GridSnapSystem gridSnapSystem = new();
@@ -82,9 +106,6 @@ public class GameBootstrap : MonoBehaviour
         cameraSystem.Initialize(World);
         World.Phases[World.EWorldPhase.Presentation].AddSystem(cameraSystem);
     }
-    // Initialize the World and Central Manager here
-
-    // public void Start() {}
 
     // Update is called once per frame
     public void Update() => World.Update(Time.deltaTime);

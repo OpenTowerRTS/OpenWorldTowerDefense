@@ -4,6 +4,9 @@ using UnityEngine;
 public class PathFindingSystem : IGameSystem, IFixedUpdatableSystem
 {
     private World _world;
+
+    private readonly IPathFinder _pathFinder;
+    public PathFindingSystem(IPathFinder pathFinder) => _pathFinder = pathFinder;
     public void Initialize(World world)
     {
         _world = world;
@@ -15,21 +18,33 @@ public class PathFindingSystem : IGameSystem, IFixedUpdatableSystem
 
     public void FixedUpdate(float deltaTime)
     {
-        IEnumerable<EntityID> entities = _world.GetEntitiesWithComponent<MovementTargetComponent>();
+        // For any system with a PathFindingRequest. Having a PathFindingRequest indicate that it has
+        // A MovementTarget. The reason why these 2 are separated is because The Request is transient. It will be removed once the path is found.
+        // But the MovementTarget will stay until the entity reach the target position.
+        // However, there are cases where the MovementTarget is simply not reachable so we need a way to stop the movement after we did our best.
+        IEnumerable<EntityID> entities = _world.GetEntitiesWithComponent<PathFindingRequest>();
 
-        // PathFindingSystem is supposed to careate a path. The specific pat also differ base on unit
+        // PathFindingSystem now call NavigationSystemManager to request a path.
+        // TODO: The specific path also need differ based on unit
         // But keep it simple for now. We will only create a Path with one point, which is the target position.
-        // Stuff to add: PathFinding algorithm, different path finder for different unit
+        // Stuff to add: different path finder for different unit
         foreach (EntityID entityId in entities)
         {
-            MovementTargetComponent movementTarget = _world.GetComponentFromEntity<MovementTargetComponent>(entityId);
-            if (!_world.TryGetComponentFromEntity(entityId, out PathComponent pathComponent) || pathComponent.Version != movementTarget.Version)
+            PathFindingRequest pathFindingRequest = _world.GetComponentFromEntity<PathFindingRequest>(entityId);
+            PathRequestStatus requestStatus = _pathFinder.TryGetPathResult(pathFindingRequest.requestId, out Vector3[] pathResult);
+            if (requestStatus == PathRequestStatus.Completed)
             {
-                PathComponent newPathComponent = new(new Vector3[] { movementTarget.TargetPosition }, movementTarget.Version)
-                {
-                    CurrentPathIndex = 0
-                };
-                _world.AddComponentToEntity(entityId, newPathComponent);
+                // Ignore null path. This means that the destination is unreachable
+                // Force remove the movement target. This movement target is now meaningless since you can't reach it.
+                PathComponent newPathComponent = new(pathResult, 0);
+                _world.AddComponentToEntity<PathComponent>(entityId, newPathComponent);
+                _world.RemoveComponentFromEntity<PathFindingRequest>(entityId);
+            }
+            else if (requestStatus == PathRequestStatus.Unreachable)
+            {
+                Debug.Log("Path result Remove PathRequest");
+                _world.RemoveComponentFromEntity<PathFindingRequest>(entityId);
+                _world.RemoveComponentFromEntity<MovementTargetComponent>(entityId);
             }
         }
     }

@@ -2,8 +2,8 @@
 
 public class BuildingSystemManager : MonoBehaviour
 {
-    [SerializeField] private GameObject gridShadowObject;
-    [SerializeField] private GameObject gridRendererObject;
+    private readonly GameObject gridShadowObject;
+    private readonly GameObject gridRendererObject;
 
     private GameObject _gridShadowInstance;
     private GameObject _gridRendererInstance;

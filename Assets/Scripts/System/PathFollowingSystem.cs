@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -24,9 +25,7 @@ public class PathFollowingSystem : IGameSystem, IFixedUpdatableSystem
             ref PathComponent pathComponent = ref _world.GetComponentFromEntity<PathComponent>(entityId);
             int currIndex = pathComponent.CurrentPathIndex;
             int pathLength = pathComponent.PathPoints.Length;
-            // If we reach the end of the path, skip
-            Debug.Log($"currIndex:{currIndex}; pathLength: {pathComponent.PathPoints.Length}");
-            if (currIndex == pathLength)
+            if (pathComponent.CurrentPathIndex == pathLength)
             {
                 continue;
             }
@@ -35,11 +34,11 @@ public class PathFollowingSystem : IGameSystem, IFixedUpdatableSystem
             {
                 // Move forward if are at the way point
                 ref MovementComponent movementComponent = ref _world.GetComponentFromEntity<MovementComponent>(entityId);
-                float dist = Vector3.Distance(entityObject.transform.position, pathComponent.PathPoints[currIndex]);
-                if (dist < movementComponent.ArrivalRadius || pathComponent.ShouldAdvanceNextFrame)
+                if (pathComponent.ShouldAdvanceNextFrame)
                 {
                     pathComponent.ShouldAdvanceNextFrame = false;
                     currIndex += 1;
+                    pathComponent.CurrentPathIndex += 1;
                 }
 
                 //in C#, a method that returns ref T can be used in two different ways:
@@ -48,12 +47,9 @@ public class PathFollowingSystem : IGameSystem, IFixedUpdatableSystem
 
                 if (currIndex < pathLength)
                 {
+                    float dist = Vector3.Distance(entityObject.transform.position, pathComponent.PathPoints[currIndex]);
                     Vector3 dir = Vector3.Normalize(pathComponent.PathPoints[currIndex] - entityObject.transform.position);
                     movementComponent.CurrSpeed = dir * movementComponent.MaxSpeed;
-                    Debug.Log($"Moving entity {entityId} to {pathComponent.PathPoints[currIndex]} at speed {movementComponent.CurrSpeed}");
-                    Debug.Log($"Speed from database = {_world.GetComponentFromEntity<MovementComponent>(entityId).CurrSpeed}");
-                    Debug.Log($"PathFollowingSystem: distance of entity {entityId}: {Vector3.Distance(entityObject.transform.position, pathComponent.PathPoints[currIndex])}");
-
                     pathComponent.ShouldAdvanceNextFrame = movementComponent.CurrSpeed.magnitude * deltaTime > dist;
                 }
 
